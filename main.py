@@ -138,13 +138,23 @@ oform(ost_pt, 'A', a, 'thick')
 a += 1
 b = copy.copy(a)
 
-for i in range(1, birn.max_row):
+for i in range(3, birn.max_row):
 	if re.search('задняя четвертина|передняя четвертина|ФС',
 	             str(birn['B' + str(i)].value)):
 
 		ost_pt['A' + str(a)] = birn['B' + str(i)].value
 		ost_pt['B' + str(a)] = birn['J' + str(i)].value
 		a += 1
+for i in range(2,ost_pt.max_row):
+	try:
+		ost_pt['B' + str(i)].value * 1
+	except:
+		ost_pt['B' + str(i)].value = 0
+for i in range(11 ,birn.max_row):
+	try:
+		birn['J' + str(i)].value * 1
+	except:
+		birn['J' + str(i)].value = 0
 try:
 	sum([ost_pt['B' + str(i)].value for i in range(b, a) if [ost_pt['B' + str(i)].value != None  ]])
 except TypeError:
@@ -174,16 +184,15 @@ for i in range(1, birn.max_row):
 		nomer = i
 ttt = []
 
-for i in range(11, nomer):
-	t = birn['B' + str(i)].value
-	for j in range(1, 18):
-		s = ost_pt['A' + str(j)].value
-		if s != None and  birn['J' + str(i)].value != None and s.replace('\t', '').strip() == t.replace(
-		  '\t', '').strip():
-			ost_pt['D' + str(j)] = int(birn['J' + str(i)].value) / 2
-			ttt.append(birn['B' + str(i)].value)
+#for i in range(11, nomer):
+#	t = birn['B' + str(i)].value
+#	for j in range(1, 18):
+#		s = ost_pt['A' + str(j)].value
+#		if s != None and  birn['J' + str(i)].value != None and s.replace('\t', '').strip() == t.replace(
+#		  '\t', '').strip():
+#			ost_pt['D' + str(j)] = int(birn['J' + str(i)].value) / 2
+#			ttt.append(birn['B' + str(i)].value)
 
 print(ttt)
 print(i)
 ost.save(f'{name}.xlsx')
-0611
