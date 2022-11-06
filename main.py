@@ -145,7 +145,11 @@ for i in range(1, birn.max_row):
 		ost_pt['A' + str(a)] = birn['B' + str(i)].value
 		ost_pt['B' + str(a)] = birn['J' + str(i)].value
 		a += 1
-#ost_pt['B' + str(a)] = sum([ost_pt['B' + str(i)].value for i in range(b, a)])
+try:
+	sum([ost_pt['B' + str(i)].value for i in range(b, a) if [ost_pt['B' + str(i)].value != None  ]])
+except TypeError:
+	ost_pt['B' + str(a)] = 0
+
 ost_pt['A' + str(a)] = 'Итого'
 ost_pt['A' + str(a)].fill = PatternFill('solid', start_color='BCBCBC')
 ost_pt['B' + str(a)].fill = PatternFill('solid', start_color='BCBCBC')
@@ -170,11 +174,11 @@ for i in range(1, birn.max_row):
 		nomer = i
 ttt = []
 
-for i in range(1, nomer):
+for i in range(11, nomer):
 	t = birn['B' + str(i)].value
 	for j in range(1, 18):
 		s = ost_pt['A' + str(j)].value
-		if s != None and t != '' and s.replace('\t', '').strip() == t.replace(
+		if s != None and  birn['J' + str(i)].value != None and s.replace('\t', '').strip() == t.replace(
 		  '\t', '').strip():
 			ost_pt['D' + str(j)] = int(birn['J' + str(i)].value) / 2
 			ttt.append(birn['B' + str(i)].value)
@@ -182,3 +186,4 @@ for i in range(1, nomer):
 print(ttt)
 print(i)
 ost.save(f'{name}.xlsx')
+0611
