@@ -67,7 +67,7 @@ ost_pt['C2'].font = Font(size=16, bold=True)
 
 for i in range(3, 13):
 	ost_pt['A' + str(i)] = list(sv.keys())[i - 3]
-ost_pt['A6'] = '2 кат дюрки'
+
 format(ost_pt, 'A', 13, 23, 65, 16, True)
 oform(ost_pt, 'A', 13, 'thick')
 ost_pt['A13'] = 'Итого'
@@ -145,6 +145,7 @@ for i in range(3, birn.max_row):
 		ost_pt['A' + str(a)] = birn['B' + str(i)].value
 		ost_pt['B' + str(a)] = birn['J' + str(i)].value
 		a += 1
+					 
 for i in range(2,ost_pt.max_row):
 	try:
 		ost_pt['B' + str(i)].value * 1
@@ -155,10 +156,8 @@ for i in range(11 ,birn.max_row):
 		birn['J' + str(i)].value * 1
 	except:
 		birn['J' + str(i)].value = 0
-try:
-	sum([ost_pt['B' + str(i)].value for i in range(b, a) if [ost_pt['B' + str(i)].value != None  ]])
-except TypeError:
-	ost_pt['B' + str(a)] = 0
+ost_pt['B' + str(a)] = 	sum([ost_pt['B' + str(i)].value for i in range(b, a) ])	
+
 
 ost_pt['A' + str(a)] = 'Итого'
 ost_pt['A' + str(a)].fill = PatternFill('solid', start_color='BCBCBC')
@@ -184,15 +183,76 @@ for i in range(1, birn.max_row):
 		nomer = i
 ttt = []
 
-#for i in range(11, nomer):
-#	t = birn['B' + str(i)].value
-#	for j in range(1, 18):
-#		s = ost_pt['A' + str(j)].value
-#		if s != None and  birn['J' + str(i)].value != None and s.replace('\t', '').strip() == t.replace(
-#		  '\t', '').strip():
-#			ost_pt['D' + str(j)] = int(birn['J' + str(i)].value) / 2
-#			ttt.append(birn['B' + str(i)].value)
+for i in range(11, nomer):
 
-print(ttt)
-print(i)
+	t = '0'
+	
+	if birn['B' + str(i)].value != None: 
+		
+		t = birn['B' + str(i)].value
+	for j in range(3, 13):
+		if ost_pt['A' + str(j)].value != None:
+			s = ost_pt['A' + str(j)].value
+		if   s.replace('\t', '').strip() == t.replace(
+		  '\t', '').strip():
+			ost_pt['D' + str(j)] = int(birn['J' + str(i)].value) / 2
+
+kat1 = 0
+for i in range(nomer , birn.max_row + 1 ):
+	if re.search('беконная', str(birn['B' + str(i)].value)):
+		kat1 = i
+
+		
+	t = '0'
+	if birn['B' + str(i)].value != None: 
+		t = birn['B' + str(i)].value
+	for j in range(3, 13):
+		if ost_pt['A' + str(j)].value != None:
+			s = ost_pt['A' + str(j)].value
+		if   s.replace('\t', '').strip() == t.replace(
+		  '\t', '').strip():
+			ost_pt['B' + str(j)] = int(birn['J' + str(i)].value) / 2
+
+ost_pt['B7'] = sum((int(ost_pt['B' + str(i)].value) for i in range(3,7) ))
+ost_pt['B10'] = sum((int(ost_pt['B' + str(i)].value) for i in range(8,10) ))			  
+ost_pt['B13'] = sum((int(ost_pt['B' + str(i)].value) for i in [7,10,11,12] ))
+s =[]
+if kat1 != '0':
+	q = birn['B' + str(kat1 + 1)].value
+	while q ==None or  re.search('\d{2}.\d{2}.\d{4}', q ):
+		if birn['J' + str(kat1 + 1)].value != 0:
+			
+			s.append([birn['B' + str(kat1 + 1)].value,birn['J' + str(kat1 + 1)].value / 2] )
+		kat1 += 1
+		q = birn['B' + str(kat1 + 1)].value
+	
+for i in range(len(s)):
+	if s[i][0] != None:
+		dt = datetime.datetime.strptime(s[i][0], '%d.%m.%Y %H:%M:%S')
+		dt -= datetime.timedelta(days=1)
+		s[i][0] = dt.strftime('%d.%m.%Y')
+
+s = str([f'{s[i][0]} - {s[i][1]}' for i in range(len(s))   ]	)	
+ost_pt['C11'] = s
+for i in range(3, 13):
+	ost_pt['A' + str(i)] = list(sv.values())[i - 3]
+ost_pt['A6'] = '2 кат дюрки'
+
+ost_pt['B6'] = int(input('Количество ТУШ 2 категории дюрков?'))
+
+ost_pt['B3'] = ost_pt['B3'].value - ost_pt['B6'].value
+	
+	
+	
+		
+		
+
+print(s)
+#print(io)
+
+#dt = datetime.datetime.strptime(birn['B80'].value, '%d.%m.%Y') 
+
+#dt1  = dt - datetime.timedelta(days=1)
+#print(type(dt), dt,dt1 )
+
 ost.save(f'{name}.xlsx')
