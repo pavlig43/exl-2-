@@ -238,21 +238,50 @@ for i in range(3, 13):
 	ost_pt['A' + str(i)] = list(sv.values())[i - 3]
 ost_pt['A6'] = '2 кат дюрки'
 
-ost_pt['B6'] = int(input('Количество ТУШ 2 категории дюрков?'))
+#ost_pt['B6'] = int(input('Количество ТУШ 2 категории дюрков?')) # Графика
 
-ost_pt['B3'] = ost_pt['B3'].value - ost_pt['B6'].value
-	
+#ost_pt['B3'] = ost_pt['B3'].value - ost_pt['B6'].value
+for i in range(nomer,birn.max_row):
+	q = birn['B' + str(i)].value
+	if q != None and re.search('\d{2}.\d{2}.\d{4}', q): 
+		dt = datetime.datetime.strptime(q, '%d.%m.%Y %H:%M:%S' )
+		dt -= datetime.timedelta(days=1)
+		birn['B' + str(i)] = dt.strftime('%d.%m.%Y')
 	
 	
 		
 		
 
-print(s)
-#print(io)
 
-#dt = datetime.datetime.strptime(birn['B80'].value, '%d.%m.%Y') 
+vk = {}
 
-#dt1  = dt - datetime.timedelta(days=1)
-#print(type(dt), dt,dt1 )
+for i in range(nomer,birn.max_row):
+	vkDate = []
+	vkCount = []
+	q = str(birn['B' + str(i)].value)
+	if re.search('ВК .* в полутушах', q):
+		ind = i + 1
+#		vk[q] = None
+		while  birn['B' + str(ind)].value == None or  re.search('\d{2}.\d{2}.\d{4}', str(birn['B' + str(ind)].value) ):
+			if birn['J' + str(ind)].value != 0:
+				vkDate.append(birn['B' + str(ind)].value)
+				vkCount.append(int(birn['J' + str(ind)].value) / 2)
+			ind += 1
+		vk[q] = pd.Series(vkCount, index = vkDate)
+vkd = pd.DataFrame(vk)
 
+
+
+
+
+
+
+print(vkd)
+
+
+ost.save('йцу.xlsx')
+with pd.ExcelWriter("йцу.xlsx", mode="a", engine="openpyxl") as writer:
+     
+
+    vkd.to_excel(writer, sheet_name="Cool drinks")
 ost.save(f'{name}.xlsx')
