@@ -9,6 +9,7 @@ from openpyxl.styles import NamedStyle
 import test
 import re
 import copy
+import numpy as np
 
 ost = load_workbook('йцу.xlsx')
 ost_pt = ost.create_sheet('Остатки полутуш', 0)
@@ -181,7 +182,7 @@ nomer = 1
 for i in range(1, birn.max_row):
 	if re.search('Холодильник хранения туш', str(birn['B' + str(i)].value)):
 		nomer = i
-ttt = []
+
 
 for i in range(11, nomer):
 
@@ -195,7 +196,56 @@ for i in range(11, nomer):
 			s = ost_pt['A' + str(j)].value
 		if   s.replace('\t', '').strip() == t.replace(
 		  '\t', '').strip():
-			ost_pt['D' + str(j)] = int(birn['J' + str(i)].value) / 2
+			ost_pt['D' + str(j)] = int(birn['J' + str(i)].value) / 2		  
+	if re.search('ВК 1',t):
+		a = np.nan if ost_pt['D29'].value is None else ost_pt['D29'].value  
+		ost_pt['D29'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
+	if re.search('ВК 2',t):
+		a = np.nan if ost_pt['D30'].value is None else ost_pt['D30'].value  
+		ost_pt['D30'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
+	if re.search('ВК Тощ',t):
+		a = np.nan if ost_pt['D31'].value is None else ost_pt['D31'].value  
+		ost_pt['D31'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])
+	if re.search('МБК',t):
+		a = np.nan if ost_pt['D19'].value is None else ost_pt['D19'].value  
+		ost_pt['D19'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
+	
+	if re.search('МБ .* (Суп|Экстр|Прима)',t):
+
+		a = np.nan if ost_pt['D23'].value is None else ost_pt['D23'].value  
+		ost_pt['D23'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
+if re.search('МТ .* (Суп|Экстр|Прима)',t):
+
+	a = np.nan if ost_pt['D25'].value is None else ost_pt['D25'].value  
+	ost_pt['D25'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])
+if re.search('МТ .* (Хорош|Отлич)',t):
+
+	a = np.nan if ost_pt['D26'].value is None else ost_pt['D26'].value  
+	ost_pt['D26'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
+if re.search('МБ .* (Хорош|Отлич)',t):
+
+	a = np.nan if ost_pt['D24'].value is None else ost_pt['D24'].value  
+	ost_pt['D24'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
+if re.search('МТ .* (Удовл|Низка)',t):
+
+	a = np.nan if ost_pt['D28'].value is None else ost_pt['D28'].value  
+	ost_pt['D28'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
+if re.search('МБ .* (Удовл|Низка)',t):
+
+	a = np.nan if ost_pt['D27'].value is None else ost_pt['D27'].value  
+	ost_pt['D27'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
+if re.search('ВСК от МБК',t):
+
+	a = np.nan if ost_pt['D21'].value is None else ost_pt['D21'].value  
+	ost_pt['D21'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
+if re.search('ВСК от МБ\b',t):
+
+	a = np.nan if ost_pt['D20'].value is None else ost_pt['D20'].value  
+	ost_pt['D20'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
+if re.search('ВСК от МТ',t):
+
+	a = np.nan if ost_pt['D22'].value is None else ost_pt['D22'].value  
+	ost_pt['D22'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
 
 kat1 = 0
 for i in range(nomer , birn.max_row + 1 ):
@@ -245,7 +295,11 @@ for i in range(nomer,birn.max_row):
 	q = birn['B' + str(i)].value
 	if q != None and re.search('\d{2}.\d{2}.\d{4}', q): 
 		dt = datetime.datetime.strptime(q, '%d.%m.%Y %H:%M:%S' )
-		dt -= datetime.timedelta(days=1)
+		try:
+			dt = dt - datetime.timedelta(days=1)
+		except OverflowError:	
+			birn['B' + str(i)] = '0'
+			
 		birn['B' + str(i)] = dt.strftime('%d.%m.%Y')
 	
 	
@@ -276,12 +330,12 @@ vkd = pd.DataFrame(vk)
 
 
 
-print(vkd)
+#print(vkd)
 
 
-ost.save('йцу.xlsx')
-with pd.ExcelWriter("йцу.xlsx", mode="a", engine="openpyxl") as writer:
+#ost.save('йцу.xlsx')
+#with pd.ExcelWriter("йцу.xlsx", mode="a", engine="openpyxl") as writer:
      
 
-    vkd.to_excel(writer, sheet_name="Cool drinks")
+#    vkd.to_excel(writer, sheet_name="Cool drinks")
 ost.save(f'{name}.xlsx')
