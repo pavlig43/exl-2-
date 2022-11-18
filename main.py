@@ -10,16 +10,98 @@ import test
 import re
 import copy
 import numpy as np
+from pandas.io.excel import ExcelWriter
+from tkinter import *
+
 
 ost = load_workbook('йцу.xlsx')
+subp = load_workbook('Субпродукты.xlsx')
+subi = subp['TDSheet']
+sub = subp.create_sheet('пох', 0)
+asub = 1
+for i in range(12, subi.max_row):
+    nom = subi['B' + str(i)].value
+    kol = subi['G' + str(i)].value
+    if nom and kol and not re.search('ерев', nom) and not re.search('пузыр', nom) :
+        sub['A' + str(asub)] = str(nom)
+        sub['B' + str(asub)] = float(str(kol))
+        asub += 1
+	
+dor = ost.create_sheet('Доработка' )	
+dor = ost['Доработка']
 ost_pt = ost.create_sheet('Остатки полутуш', 0)
 ost_mb = ost.create_sheet('Остатки по датам молодняк', -1)
 ost_vk = ost.create_sheet('Остаток по датам коровы', -1)
+livG  = ost.create_sheet('Ливер говядина', -1)
+livG = ost['Ливер говядина']
+livS  = ost.create_sheet('Ливер свинина', -1)
+livS = ost['Ливер свинина']
+maso =  ost.create_sheet('Остатки мяса и костей', -1)
+memory = ost.create_sheet('Памятка' )	
+memory = ost['Памятка']	
 date = datetime.datetime.now().strftime('%d.%m.%Y')
 birn = ost['TDSheet']
 name = f'Остатки на {date}'
+sl = 4
+gl = 4
+ddor = 1
+
+for i in range(1,sub.max_row):
+	nom = sub['A' + str(i)].value
+	pp = sub['A' + str(i + 1)].value
+	ppk = sub['B' + str(i + 1)].value
+	kol = sub['B' + str(i)].value	
+	if nom in livGG:
+		livG['A' + str(gl)] = nom
+		livG['B' + str(gl)] = kol
+		gl += 1
+	if 'Пром.' in pp and nom in livGG :
+		livG['A' + str(gl)] = nom + '  ПП'
+		livG['B' + str(gl)] = ppk
+		livG['B' + str(gl - 1)] = kol - ppk
+		gl += 1
+	
+	if nom in livSS:
+		livS['A' + str(sl)] = nom
+		livS['B' + str(sl)] = kol
+		sl += 1
+	if 'Пром.' in pp and nom in livSS :
+		livS['A' + str(sl)] = nom + '  ПП'
+		livS['B' + str(sl)] = ppk
+		livS['B' + str(sl - 1)] = kol - ppk
+		sl += 1
+	if nom in dorob:
+		if kol > 20:
+			memory['A1'] = 'Доработки больше 20 кг, зайди на лист доработка и проанализируй. Сообщи об этом менеджеру , если необходимо. '# memory1
+		dor['A' + str(ddor)] = nom
+		dor['B' + str(ddor)] = kol
+		ddor += 1
+		
+dor.column_dimensions['A'].width = 65
+livS.column_dimensions['A'].width = 55
+livG.column_dimensions['A'].width = 55
+
+livS.merge_cells('A1:A2')
+livS['A1'] = 'Наименование'
+livS['A1'].font = Font(size=14,bold=True,color='871D1D')
+livS.merge_cells('B1:B2')
+livS['B1'].font = Font(size=14,bold=True,color='871D1D')
+livS['B1'] = 'ОХЛ'
+livS.merge_cells('C1:C2')
+livS['C1'].font = Font(size=14,bold=True,color='871D1D')
+livS['C1'] = 'ЗАМ'
+livS.merge_cells('D1:E1')
+livS['D1'].font = Font(size=11,bold=True,color='871D1D')
+livS.column_dimensions['D'].width = 15
+livS.column_dimensions['E'].width = 15
+livS['D2'] = 'Ливерный'
+livS['E2'] = 'Склад № 2'
+livS['D2'].font = Font(size=11,bold=True,color='871D1D')
+livS['E2'].font = Font(size=11,bold=True,color='871D1D')
+livS['D1'] = 'Заполняет менеджер'
 ost_pt['A1'] = 'Остатки холодильника хранения туш '
 
+subp.save('yyy.xlsx')
 
 def format(lst, let, num, height, width, size, bold):
 
@@ -214,38 +296,38 @@ for i in range(11, nomer):
 
 		a = np.nan if ost_pt['D23'].value is None else ost_pt['D23'].value  
 		ost_pt['D23'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
-if re.search('МТ .* (Суп|Экстр|Прима)',t):
+	if re.search('МТ .* (Суп|Экстр|Прима)',t):
 
-	a = np.nan if ost_pt['D25'].value is None else ost_pt['D25'].value  
-	ost_pt['D25'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])
-if re.search('МТ .* (Хорош|Отлич)',t):
+		a = np.nan if ost_pt['D25'].value is None else ost_pt['D25'].value  
+		ost_pt['D25'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])
+	if re.search('МТ .* (Хорош|Отлич)',t):
 
-	a = np.nan if ost_pt['D26'].value is None else ost_pt['D26'].value  
-	ost_pt['D26'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
-if re.search('МБ .* (Хорош|Отлич)',t):
+		a = np.nan if ost_pt['D26'].value is None else ost_pt['D26'].value  
+		ost_pt['D26'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
+	if re.search('МБ .* (Хорош|Отлич)',t):
 
-	a = np.nan if ost_pt['D24'].value is None else ost_pt['D24'].value  
-	ost_pt['D24'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
-if re.search('МТ .* (Удовл|Низка)',t):
+		a = np.nan if ost_pt['D24'].value is None else ost_pt['D24'].value  
+		ost_pt['D24'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
+	if re.search('МТ .* (Удовл|Низка)',t):
 
-	a = np.nan if ost_pt['D28'].value is None else ost_pt['D28'].value  
-	ost_pt['D28'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
-if re.search('МБ .* (Удовл|Низка)',t):
+		a = np.nan if ost_pt['D28'].value is None else ost_pt['D28'].value  
+		ost_pt['D28'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
+	if re.search('МБ .* (Удовл|Низка)',t):
 
-	a = np.nan if ost_pt['D27'].value is None else ost_pt['D27'].value  
-	ost_pt['D27'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
-if re.search('ВСК от МБК',t):
+		a = np.nan if ost_pt['D27'].value is None else ost_pt['D27'].value  
+		ost_pt['D27'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
+	if re.search('ВСК от МБК',t):
 
-	a = np.nan if ost_pt['D21'].value is None else ost_pt['D21'].value  
-	ost_pt['D21'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
-if re.search('ВСК от МБ\b',t):
+		a = np.nan if ost_pt['D21'].value is None else ost_pt['D21'].value  
+		ost_pt['D21'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
+	if re.search('ВСК от МБ\b',t):
 
-	a = np.nan if ost_pt['D20'].value is None else ost_pt['D20'].value  
-	ost_pt['D20'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
-if re.search('ВСК от МТ',t):
+		a = np.nan if ost_pt['D20'].value is None else ost_pt['D20'].value  
+		ost_pt['D20'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
+	if re.search('ВСК от МТ',t):
 
-	a = np.nan if ost_pt['D22'].value is None else ost_pt['D22'].value  
-	ost_pt['D22'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
+		a = np.nan if ost_pt['D22'].value is None else ost_pt['D22'].value  
+		ost_pt['D22'] =np.nansum([ a, int(birn['J' + str(i)].value) / 2])	
 
 kat1 = 0
 for i in range(nomer , birn.max_row + 1 ):
@@ -288,7 +370,24 @@ for i in range(3, 13):
 	ost_pt['A' + str(i)] = list(sv.values())[i - 3]
 ost_pt['A6'] = '2 кат дюрки'
 
-#ost_pt['B6'] = int(input('Количество ТУШ 2 категории дюрков?')) # Графика
+def clicked():  
+
+	ost_pt['B6'] = int(count.get())
+	window.destroy()
+
+  
+#window = Tk()  
+#window.title("Количество ТУШ 2 категории дюрков?")  
+#window.geometry('600x600')  
+#lbl = Label(window, text="Количество ТУШ 2 категории дюрков?", font=("Arial Bold", 15))  
+#lbl.pack()  
+
+#count = Entry(window)
+#count.pack()
+#btn = Button(window, text="ОК!", command=clicked).pack()  
+
+#window.mainloop()
+
 
 #ost_pt['B3'] = ost_pt['B3'].value - ost_pt['B6'].value
 for i in range(nomer,birn.max_row):
@@ -301,41 +400,50 @@ for i in range(nomer,birn.max_row):
 			birn['B' + str(i)] = '0'
 			
 		birn['B' + str(i)] = dt.strftime('%d.%m.%Y')
-	
-	
 		
-		
-
+for i in range(19, 32):
+	ost_pt['D' + str(i)].fill = PatternFill('solid', start_color="F7FF00")
+	format(ost_pt, 'D', i, 18, 36, 11, True)
+	oform(ost_pt, 'D', i, 'thin')
 
 vk = {}
-
+repile = 'Говядина от кат. охл. в полутушах с вырезкой'.split()
 for i in range(nomer,birn.max_row):
 	vkDate = []
 	vkCount = []
 	q = str(birn['B' + str(i)].value)
+	
 	if re.search('ВК .* в полутушах', q):
+	
 		ind = i + 1
-#		vk[q] = None
 		while  birn['B' + str(ind)].value == None or  re.search('\d{2}.\d{2}.\d{4}', str(birn['B' + str(ind)].value) ):
 			if birn['J' + str(ind)].value != 0:
+
 				vkDate.append(birn['B' + str(ind)].value)
 				vkCount.append(int(birn['J' + str(ind)].value) / 2)
 			ind += 1
+			d = []
+		for i in q.split():# Обрезание названия
+			
+			if not i in repile:
+				d.append(i)
+			q = ''.join(d)	
 		vk[q] = pd.Series(vkCount, index = vkDate)
 vkd = pd.DataFrame(vk)
-
-
-
-
-
-
-
 #print(vkd)
 
+listIn = list(vkd.index)
 
-#ost.save('йцу.xlsx')
-#with pd.ExcelWriter("йцу.xlsx", mode="a", engine="openpyxl") as writer:
-     
+	
+	
 
-#    vkd.to_excel(writer, sheet_name="Cool drinks")
+#sk.mainloop()
+
+
+
+
 ost.save(f'{name}.xlsx')
+#with pd.ExcelWriter(f'{name}.xlsx', mode="a", if_sheet_exists='replace', engine="openpyxl") as writer:
+#	vkd.to_excel(writer, sheet_name="Остаток по датам коровы")
+
+
