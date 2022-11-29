@@ -1,30 +1,17 @@
-class Table:
+# import jinja2
+# from openpyxl import *
+# import pandas as pd
 
-    def __init__(self, root):
+# wb = Workbook()
+# ws = wb.active
+# wb.save('мой.xlsx')
+# # assign data of lists.
+# data = {'Name': ['3', '5', '7', '6'], 'Age': [20, 21, 19, 18]}
 
-        # code for creating table
-        for i in range(total_rows):
-            for j in range(total_columns):
-                self.e = Entry(root, width=20, fg='blue',
-                               font=('Arial', 16, 'bold'))
+# df = pd.DataFrame(data)
 
-                self.e.grid(row=i, column=j)
-                self.e.insert(END, lst[i][j])
+# print(df)
+# a = df.style.applymap(lambda x: "background-color: red" if int(x)>12 else "background-color: white")
 
 
-# take the data
-lst = [(1, 'Raj', 'Mumbai', 19),
-       (2, 'Aaryan', 'Pune', 18),
-       (3, 'Vaishnavi', 'Mumbai', 20),
-       (4, 'Rachna', 'Mumbai', 21),
-       (5, 'Shubham', 'Delhi', 21)]
-
-# find total number of rows and
-# columns in list
-total_rows = len(lst)
-total_columns = len(lst[0])
-
-# create root window
-root = Tk()
-t = Table(root)
-root.mainloop()
+# a.to_excel('мой.xlsx',engine='openpyxl',index=False)
