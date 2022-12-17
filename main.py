@@ -427,15 +427,16 @@ for i in range(nomer, birn.max_row):
     if re.search('ВСК от МБК', t):
         a = np.nan if ost_pt['B21'].value is None else ost_pt['B21'].value
         ost_pt['B21'] = np.nansum([a, int(birn['J' + str(i)].value) / 2])
-    if re.search('ВСК от МБ\b', t):
+    if re.search('ВСК от МБ кат', t):
         a = np.nan if ost_pt['B20'].value is None else ost_pt['B20'].value
         ost_pt['B20'] = np.nansum([a, int(birn['J' + str(i)].value) / 2])
+
     if re.search('ВСК от МТ', t):
         a = np.nan if ost_pt['B22'].value is None else ost_pt['B22'].value
         ost_pt['B22'] = np.nansum([a, int(birn['J' + str(i)].value) / 2])
 ost_pt['B32'] = sum([ost_pt['B' + str(i)].value for i in range(19,32)])
 ost_pt['B32'].font = Font(size=12,bold=True)
-kat1 = 0
+kat1 = '0'
 for i in range(nomer, birn.max_row + 1):
     if re.search('беконная', str(birn['B' + str(i)].value)):
         kat1 = i
@@ -456,11 +457,15 @@ ost_pt['B13'] = sum((int(ost_pt['B' + str(i)].value) for i in [7, 10, 11, 12]))
 s = []
 if kat1 != '0':
     q = birn['B' + str(kat1 + 1)].value
-    while q == None or re.search('\d{2}.\d{2}.\d{4}', q):
-        if birn['J' + str(kat1 + 1)].value != 0:
-            s.append([birn['B' + str(kat1 + 1)].value, birn['J' + str(kat1 + 1)].value / 2])
-        kat1 += 1
-        q = birn['B' + str(kat1 + 1)].value
+    try:
+        while q == None  or re.search('\d{2}.\d{2}.\d{4}', q):
+            if birn['J' + str(kat1 + 1)].value != 0:
+                s.append([birn['B' + str(kat1 + 1)].value, birn['J' + str(kat1 + 1)].value / 2])
+            kat1 += 1
+            q = birn['B' + str(kat1 + 1)].value
+    except:
+        print(q,kat1)
+
 
 for i in range(len(s)):
     if s[i][0] != None:
@@ -587,8 +592,9 @@ btn = Button(root, text="Отправить!", command=click_btn, width=20, bg='
              font=('Novartis Deco', 16, 'bold')).grid(row=0, column=0)
 
 root.mainloop()
-vkd = vkd.replace(0, np.nan)
+vkd = vkd.replace(np.nan, 0)
 vkd -= vks
+vkd = vkd.replace(0, np.nan)
 
 
 
@@ -866,6 +872,7 @@ mbvsk.index = pd.to_datetime(mbvsk.index, errors='ignore',dayfirst=True)
 mbvsk = mbvsk.sort_index()
 mbvsk.index = mbvsk.index.strftime('%d.%m.%Y')
 mbvsk = mbvsk.rename_axis('Дата')
+#print(sum(mbvsk))
 molod.append(mbvsk)
 
 ind = len(mb.index) + 6
