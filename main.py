@@ -65,7 +65,7 @@ def click():
     window.destroy()
 
 
-for i in range(3, sub.max_row):
+for i in range(2, sub.max_row):
     
     nom = sub['A' + str(i)].value
     pp = sub['A' + str(i + 1)].value
@@ -74,10 +74,12 @@ for i in range(3, sub.max_row):
     AAAAA = [pp,ppk]
     if kol < 0:
         pam.append('На складе субпродуктов отрицательные остатки, нужно исправить!!!')
-    if nom in livGG:
+    if nom in livGG :
         livG['A' + str(gl)] = nom
         livG['B' + str(gl)] = kol
         gl += 1
+        print(nom)
+
     if 'Пром.' in pp and nom in livGG:
         livG['A' + str(gl)] = nom + '  ПП'
         livG['B' + str(gl)] = ppk
@@ -108,7 +110,7 @@ for i in range(3, sub.max_row):
         maso['C' + str(ms)] = kol
         maso['A' + str(ms)].alignment = Alignment(wrap_text=True)
         ms += 1
-    if not nom in pobocka and not re.search('ром. переработка', nom):
+    if not nom in pobocka and not re.search('ром. переработка', nom) and not nom in livGG and nom not in livSS :
         if re.search('Гов. 2 с. колбасная', nom):
             maso['A' + str(ms)] = nom
             maso['B' + str(ms)] = kol
@@ -127,7 +129,7 @@ for i in range(3, sub.max_row):
             maso['A' + str(ms + 1)] = f'{nom}  Рулька'
             maso['B' + str(ms)] = maso['B' + str(ms)].value - maso['B' + str(ms + 1)].value
             ms += 2
-        if re.search('Св. жирная колб', nom) or re.search('Св. п/ж колб', nom):
+        elif re.search('Св. жирная колб', nom) or re.search('Св. п/ж колб', nom):
             maso['A' + str(ms)] = nom
             maso['B' + str(ms)] = kol
             maso['A' + str(ms)].alignment = Alignment(wrap_text=True)
@@ -150,6 +152,7 @@ for i in range(3, sub.max_row):
             maso['B' + str(ms)] = kol
             maso['A' + str(ms)].alignment = Alignment(wrap_text=True)
             ms += 1
+			
 ost.create_sheet('Брыжейка')
 ost.create_sheet('Нежил')
 
