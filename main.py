@@ -65,29 +65,30 @@ def click():
     window.destroy()
 
 
+def click1():
+    maso['B' + str(ms)] = int(count1.get())
+    window1.destroy()
+
+
 for i in range(2, sub.max_row):
-    
+
     nom = sub['A' + str(i)].value
     pp = sub['A' + str(i + 1)].value
     ppk = sub['B' + str(i + 1)].value
     kol = sub['B' + str(i)].value
-    AAAAA = [pp,ppk]
+    AAAAA = [pp, ppk]
     if kol < 0:
         pam.append('На складе субпродуктов отрицательные остатки, нужно исправить!!!')
-    if nom in livGG :
+    if nom in livGG:
         livG['A' + str(gl)] = nom
         livG['B' + str(gl)] = kol
         gl += 1
-        print(nom)
 
     if 'Пром.' in pp and nom in livGG:
         livG['A' + str(gl)] = nom + '  ПП'
         livG['B' + str(gl)] = ppk
         livG['B' + str(gl - 1)] = kol - ppk
         gl += 1
-		
-    
-		
 
     if nom in livSS:
         livS['A' + str(sl)] = nom
@@ -110,7 +111,7 @@ for i in range(2, sub.max_row):
         maso['C' + str(ms)] = kol
         maso['A' + str(ms)].alignment = Alignment(wrap_text=True)
         ms += 1
-    if not nom in pobocka and not re.search('ром. переработка', nom) and not nom in livGG and nom not in livSS :
+    if not nom in pobocka and not re.search('ром. переработка', nom) and not nom in livGG and not nom in livSS and not nom in zam and not nom in dorob:
         if re.search('Гов. 2 с. колбасная', nom):
             maso['A' + str(ms)] = nom
             maso['B' + str(ms)] = kol
@@ -129,7 +130,7 @@ for i in range(2, sub.max_row):
             maso['A' + str(ms + 1)] = f'{nom}  Рулька'
             maso['B' + str(ms)] = maso['B' + str(ms)].value - maso['B' + str(ms + 1)].value
             ms += 2
-        elif re.search('Св. жирная колб', nom) or re.search('Св. п/ж колб', nom):
+        elif re.search('Св. п/ж колб', nom):
             maso['A' + str(ms)] = nom
             maso['B' + str(ms)] = kol
             maso['A' + str(ms)].alignment = Alignment(wrap_text=True)
@@ -141,18 +142,51 @@ for i in range(2, sub.max_row):
 
             count = Entry(window)
             count.pack()
-            btn = Button(window, text="ОК!", command=click).pack()
+            Button(window, text="ОК!", command=click).pack()
 
             window.mainloop()
             maso['A' + str(ms + 1)] = f'{nom}  КРОВ/МЕЛКАЯ'
             maso['B' + str(ms)] = maso['B' + str(ms)].value - maso['B' + str(ms + 1)].value
             ms += 2
+        elif re.search('Св. жирная колб', nom):
+            maso['A' + str(ms)] = nom
+            maso['B' + str(ms)] = kol
+            maso['A' + str(ms)].alignment = Alignment(wrap_text=True)
+
+            window = Tk()
+            window.geometry('600x600')
+            lbl = Label(window, text=f'Кол-во кров и мелкой {nom}?', font=("Arial Bold", 15))
+            lbl.pack()
+
+            count = Entry(window)
+            count.pack()
+            Button(window, text="ОК!", command=click).pack()
+
+            window.mainloop()
+            maso['A' + str(ms + 1)] = f'{nom}  КРОВ/МЕЛКАЯ'
+            maso['B' + str(ms)] = maso['B' + str(ms)].value - maso['B' + str(ms + 1)].value
+            ms += 2
+
+            window1 = Tk()
+            window1.geometry('600x600')
+            lbl1 = Label(window1, text=f'КУПАТЫ {nom}?', font=("Arial Bold", 15))
+            lbl1.pack()
+
+            count1 = Entry(window1)
+            count1.pack()
+            btn1 = Button(window1, text="ОК!", command=click1).pack()
+
+            window1.mainloop()
+            maso['A' + str(ms)] = f'{nom}  КУПАТЫ'
+            maso['B' + str(ms - 2)] = maso['B' + str(ms - 2)].value - maso['B' + str(ms)].value
+            ms += 1
         else:
             maso['A' + str(ms)] = nom
             maso['B' + str(ms)] = kol
             maso['A' + str(ms)].alignment = Alignment(wrap_text=True)
             ms += 1
-			
+
+
 ost.create_sheet('Брыжейка')
 ost.create_sheet('Нежил')
 
@@ -240,22 +274,22 @@ oform(ost_pt, 'E', 2, 'medium')
 format(ost_pt, 'E', 1, 18, 37, 16, True)
 oform(ost_pt, 'E', 1, 'medium')
 for i in range(1, 14):
-	ost_pt['E' + str(i)].font = Font(size=11, bold=True)
-	thack = Side(border_style='thin', color="0A0000")
-	ost_pt['E' + str(i)].border = Border(top=thack,left=thack,right=thack,bottom=thack)                                                                   
-	ost_pt['E' + str(i)].fill = PatternFill('solid', start_color="66FFFF")
+    ost_pt['E' + str(i)].font = Font(size=11, bold=True)
+    thack = Side(border_style='thin', color="0A0000")
+    ost_pt['E' + str(i)].border = Border(top=thack, left=thack, right=thack, bottom=thack)
+    ost_pt['E' + str(i)].fill = PatternFill('solid', start_color="66FFFF")
 for i in range(19, 32):
-	ost_pt['E' + str(i)].font = Font(size=11, bold=True)
-	thack = Side(border_style='thin', color="0A0000")
-	ost_pt['E' + str(i)].border = Border(top=thack,left=thack,right=thack,bottom=thack)
-	ost_pt['E' + str(i)].fill = PatternFill('solid', start_color="66FFFF")
+    ost_pt['E' + str(i)].font = Font(size=11, bold=True)
+    thack = Side(border_style='thin', color="0A0000")
+    ost_pt['E' + str(i)].border = Border(top=thack, left=thack, right=thack, bottom=thack)
+    ost_pt['E' + str(i)].fill = PatternFill('solid', start_color="66FFFF")
 for i in range(3, 14):
     for j in range(1, 5):
         format(ost_pt, get_column_letter(j), i, 18, 36, 11, True)
         oform(ost_pt, get_column_letter(j), i, 'thin')
 for i in range(1, 4):
     ost_pt[get_column_letter(i) + str(2)].fill = PatternFill('solid',
-                                                             start_color="75F286")	
+                                                             start_color="75F286")
 ost_pt['C2'] = 'Дата'
 ost_pt['C2'].font = Font(size=16, bold=True)
 
@@ -357,13 +391,13 @@ for i in range(1, birn.max_row):
     q = str(birn['B' + str(i)].value)
     if re.search('4 кат.* охл. без шкуры', q):
 
-        ost_pt['B14'] = birn['J' + str(i)].value //2
+        ost_pt['B14'] = birn['J' + str(i)].value // 2
     elif re.search('4 ка.*МПК',
                    q):
         ost_pt['B15'] = birn['J' + str(i)].value // 2
     elif re.search('Свинина в тушах и полутушах охл.2 кат.в шкуре',
                    q):
-        ost_pt['B16'] = birn['J' + str(i)].value//2
+        ost_pt['B16'] = birn['J' + str(i)].value // 2
 
 nomer = 1
 for i in range(1, birn.max_row):
@@ -431,85 +465,81 @@ for i in range(nomer, birn.max_row):
     if re.search('ВК 1.* в полуту', t):
         a = np.nan if ost_pt['B29'].value is None else ost_pt['B29'].value
         ost_pt['B29'] = np.nansum([a, int(birn['J' + str(i)].value) / 2])
-        s  = np.nan if ost_pt['E29'].value is None else ost_pt['E29'].value
-        ost_pt['E29'] = np.nansum([s, float(birn['F' + str(i)].value)]) 
+        s = np.nan if ost_pt['E29'].value is None else ost_pt['E29'].value
+        ost_pt['E29'] = np.nansum([s, float(birn['F' + str(i)].value)])
 
     if re.search('ВК 2.* в полуту', t):
         a = np.nan if ost_pt['B30'].value is None else ost_pt['B30'].value
         ost_pt['B30'] = np.nansum([a, int(birn['J' + str(i)].value) / 2])
-        s  = np.nan if ost_pt['E30'].value is None else ost_pt['E30'].value
-        ost_pt['E30'] = np.nansum([s, float(birn['F' + str(i)].value)]) 
-		
+        s = np.nan if ost_pt['E30'].value is None else ost_pt['E30'].value
+        ost_pt['E30'] = np.nansum([s, float(birn['F' + str(i)].value)])
+
     if re.search('ВК Тощ.* в полуту', t):
         a = np.nan if ost_pt['B31'].value is None else ost_pt['B31'].value
         ost_pt['B31'] = np.nansum([a, int(birn['J' + str(i)].value) / 2])
-        s  = np.nan if ost_pt['E31'].value is None else ost_pt['E31'].value
+        s = np.nan if ost_pt['E31'].value is None else ost_pt['E31'].value
         ost_pt['E31'] = np.nansum([s, float(birn['F' + str(i)].value)])
     if re.search('МБК', t) and not re.search('ВСК', t):
         a = np.nan if ost_pt['B19'].value is None else ost_pt['B19'].value
         ost_pt['B19'] = np.nansum([a, int(birn['J' + str(i)].value) / 2])
-        s  = np.nan if ost_pt['E19'].value is None else ost_pt['E19'].value
+        s = np.nan if ost_pt['E19'].value is None else ost_pt['E19'].value
         ost_pt['E19'] = np.nansum([s, float(birn['F' + str(i)].value)])
 
     if re.search('МБ .* (Суп|Экстр|Прима)', t):
         a = np.nan if ost_pt['B23'].value is None else ost_pt['B23'].value
         ost_pt['B23'] = np.nansum([a, int(birn['J' + str(i)].value) / 2])
-        s  = np.nan if ost_pt['E23'].value is None else ost_pt['E23'].value
+        s = np.nan if ost_pt['E23'].value is None else ost_pt['E23'].value
         ost_pt['E23'] = np.nansum([s, float(birn['F' + str(i)].value)])
     if re.search('МТ .* (Суп|Экстр|Прима)', t):
         a = np.nan if ost_pt['B25'].value is None else ost_pt['B25'].value
         ost_pt['B25'] = np.nansum([a, int(birn['J' + str(i)].value) / 2])
-        s  = np.nan if ost_pt['E25'].value is None else ost_pt['E25'].value
-        ost_pt['E25'] = np.nansum([s, float(birn['F' + str(i)].value)]) 
+        s = np.nan if ost_pt['E25'].value is None else ost_pt['E25'].value
+        ost_pt['E25'] = np.nansum([s, float(birn['F' + str(i)].value)])
     if re.search('МТ .* (Хорош|Отлич)', t):
         a = np.nan if ost_pt['B26'].value is None else ost_pt['B26'].value
         ost_pt['B26'] = np.nansum([a, int(birn['J' + str(i)].value) / 2])
-        s  = np.nan if ost_pt['E26'].value is None else ost_pt['E26'].value
+        s = np.nan if ost_pt['E26'].value is None else ost_pt['E26'].value
         ost_pt['E26'] = np.nansum([s, float(birn['F' + str(i)].value)])
     if re.search('МБ .* (Хорош|Отлич)', t):
         a = np.nan if ost_pt['B24'].value is None else ost_pt['B24'].value
         ost_pt['B24'] = np.nansum([a, int(birn['J' + str(i)].value) / 2])
-        s  = np.nan if ost_pt['E24'].value is None else ost_pt['E24'].value
+        s = np.nan if ost_pt['E24'].value is None else ost_pt['E24'].value
         ost_pt['E24'] = np.nansum([s, float(birn['F' + str(i)].value)])
     if re.search('МТ .* (Удовл|Низка)', t):
         a = np.nan if ost_pt['B28'].value is None else ost_pt['B28'].value
         ost_pt['B28'] = np.nansum([a, int(birn['J' + str(i)].value) / 2])
-        s  = np.nan if ost_pt['E28'].value is None else ost_pt['E28'].value
+        s = np.nan if ost_pt['E28'].value is None else ost_pt['E28'].value
         ost_pt['E28'] = np.nansum([s, float(birn['F' + str(i)].value)])
     if re.search('МБ .* (Удовл|Низка)', t):
         a = np.nan if ost_pt['B27'].value is None else ost_pt['B27'].value
         ost_pt['B27'] = np.nansum([a, int(birn['J' + str(i)].value) / 2])
-        s  = np.nan if ost_pt['E27'].value is None else ost_pt['E27'].value
+        s = np.nan if ost_pt['E27'].value is None else ost_pt['E27'].value
         ost_pt['E27'] = np.nansum([s, float(birn['F' + str(i)].value)])
-        
+
     if re.search('ВСК от МБК', t):
         a = np.nan if ost_pt['B21'].value is None else ost_pt['B21'].value
         ost_pt['B21'] = np.nansum([a, int(birn['J' + str(i)].value) / 2])
-        s  = np.nan if ost_pt['E21'].value is None else ost_pt['E21'].value
-        ost_pt['E21'] = np.nansum([s, float(birn['F' + str(i)].value)])  
+        s = np.nan if ost_pt['E21'].value is None else ost_pt['E21'].value
+        ost_pt['E21'] = np.nansum([s, float(birn['F' + str(i)].value)])
 
-    	
     if re.search('ВСК от МБ кат', t):
         a = np.nan if ost_pt['B20'].value is None else ost_pt['B20'].value
         ost_pt['B20'] = np.nansum([a, int(birn['J' + str(i)].value) / 2])
-        s  = np.nan if ost_pt['E20'].value is None else ost_pt['E20'].value
+        s = np.nan if ost_pt['E20'].value is None else ost_pt['E20'].value
         ost_pt['E20'] = np.nansum([s, float(birn['F' + str(i)].value)])
 
     if re.search('ВСК от МТ', t):
         a = np.nan if ost_pt['B22'].value is None else ost_pt['B22'].value
         ost_pt['B22'] = np.nansum([a, int(birn['J' + str(i)].value) / 2])
-        s  = np.nan if ost_pt['E22'].value is None else ost_pt['E22'].value
+        s = np.nan if ost_pt['E22'].value is None else ost_pt['E22'].value
         ost_pt['E22'] = np.nansum([s, float(birn['F' + str(i)].value)])
-for i in range(19,32):	
-	if ost_pt['B' + str(i)].value != 0:
-		ost_pt['E' + str(i)] = int(ost_pt['E' + str(i)].value/ost_pt['B' + str(i)].value)
+for i in range(19, 32):
+    if ost_pt['B' + str(i)].value != 0:
+        ost_pt['E' + str(i)] = int(ost_pt['E' + str(i)].value / ost_pt['B' + str(i)].value)
 
+ost_pt['B32'] = sum([ost_pt['B' + str(i)].value for i in range(19, 32)])
 
-
-ost_pt['B32'] = sum([ost_pt['B' + str(i)].value for i in range(19,32)])
-
-
-ost_pt['B32'].font = Font(size=12,bold=True)
+ost_pt['B32'].font = Font(size=12, bold=True)
 kat1 = '0'
 for i in range(nomer, birn.max_row + 1):
     if re.search('беконная', str(birn['B' + str(i)].value)):
@@ -523,10 +553,10 @@ for i in range(nomer, birn.max_row + 1):
             s = ost_pt['A' + str(j)].value
         if s.replace('\t', '').strip() == t.replace(
                 '\t', '').strip():
-            if birn['J' + str(i)].value !=0 or int(birn['J' + str(i)].value) !=0 :
-                ost_pt['B' + str(j)] = int(birn['J' + str(i)].value) / 2  
-                if birn['F' + str(i)].value != None or int(birn['E' + str(i)].value) !=0   :	
-                    ost_pt['E' + str(j)] = int(birn['F' + str(i)].value /ost_pt['B' + str(j)].value)
+            if birn['J' + str(i)].value != 0 or int(birn['J' + str(i)].value) != 0:
+                ost_pt['B' + str(j)] = int(birn['J' + str(i)].value) / 2
+                if birn['F' + str(i)].value != None or int(birn['E' + str(i)].value) != 0:
+                    ost_pt['E' + str(j)] = int(birn['F' + str(i)].value / ost_pt['B' + str(j)].value)
 ost_pt['B7'] = sum((int(ost_pt['B' + str(i)].value) for i in range(3, 7)))
 ost_pt['B10'] = sum((int(ost_pt['B' + str(i)].value) for i in range(8, 10)))
 ost_pt['B13'] = sum((int(ost_pt['B' + str(i)].value) for i in [7, 10, 11, 12]))
@@ -534,14 +564,13 @@ s = []
 if kat1 != '0':
     q = birn['B' + str(kat1 + 1)].value
     try:
-        while q == None  or re.search('\d{2}.\d{2}.\d{4}', q):
+        while q == None or re.search('\d{2}.\d{2}.\d{4}', q):
             if birn['J' + str(kat1 + 1)].value != 0:
                 s.append([birn['B' + str(kat1 + 1)].value, birn['J' + str(kat1 + 1)].value / 2])
             kat1 += 1
             q = birn['B' + str(kat1 + 1)].value
     except:
-        print(q,kat1)
-
+        print(q, kat1)
 
 for i in range(len(s)):
     if s[i][0] != None:
@@ -613,10 +642,9 @@ for i in range(nomer, birn.max_row):
             q = ''.join(d)
         vk[q] = pd.Series(vkCount, index=vkDate)
 vkd = pd.DataFrame(vk)
-vkd.index = pd.to_datetime(vkd.index, errors='ignore',dayfirst=True)
+vkd.index = pd.to_datetime(vkd.index, errors='ignore', dayfirst=True)
 vkd = vkd.sort_index()
 vkd.index = vkd.index.strftime('%d.%m.%Y')
-
 
 pam.append('Распредели в остатках кости - перетяни в колонку заморозка, если в клетках ')
 pam.append('Распредели ливер, если есть в заморозке ')
@@ -653,9 +681,10 @@ for i in range(total_columns):
         entry.insert(END, 0)
     vks[nomsk[i]] = pd.Series(vksCount, index=vksDate)
 vks = pd.DataFrame(vks)
-vks.index = pd.to_datetime(vks.index, errors='ignore',dayfirst=True)
+vks.index = pd.to_datetime(vks.index, errors='ignore', dayfirst=True)
 vks = vks.sort_index()
 vks.index = vks.index.strftime('%d.%m.%Y')
+
 
 def click_btn():
     for col in list(vks.columns):
@@ -671,9 +700,6 @@ root.mainloop()
 vkd = vkd.replace(np.nan, 0)
 vkd -= vks
 vkd = vkd.replace(0, np.nan)
-
-
-
 
 if [j for i in vkd.values for j in i if j < 0]:
     otrKorov = Tk()
@@ -730,7 +756,6 @@ for i in range(nomer, birn.max_row):
     if re.search('баками', q) and qq != None:
         rcv += int(qq) / 2
 
-
 pam.append(f'Расход по всем участкам составил {rcv} свиней')
 if ubvk != 0:
     pam.append(f' Убой Коров составил {ubvk} голов. ')
@@ -786,7 +811,7 @@ for i in range(nomer, birn.max_row):
             q = ' '.join(d)
         mb[q] = pd.Series(mbCount, index=mbDate)
 mb = pd.DataFrame(mb)
-mb.index = pd.to_datetime(mb.index, errors='ignore',dayfirst=True)
+mb.index = pd.to_datetime(mb.index, errors='ignore', dayfirst=True)
 mb = mb.sort_index()
 mb.index = mb.index.strftime('%d.%m.%Y')
 mbs = ['МБ Супер', 'МБ Прима', 'МБ Экстра', 'МБ Отличная', 'МБ Хорошая', 'МБ Удовлетворительная', 'МБ Низкая']
@@ -822,7 +847,7 @@ for i in range(nomer, birn.max_row):
             q = ' '.join(d)
         mt[q] = pd.Series(mtCount, index=mtDate)
 mt = pd.DataFrame(mt)
-mt.index = pd.to_datetime(mt.index, errors='ignore',dayfirst=True)
+mt.index = pd.to_datetime(mt.index, errors='ignore', dayfirst=True)
 mt = mt.sort_index()
 mt.index = mt.index.strftime('%d.%m.%Y')
 mts = ['МТ Супер', 'МТ Прима', 'МТ Экстра', 'МТ Отличная', 'МТ Хорошая', 'МТ Удовлетворительная', 'МТ Низкая']
@@ -856,7 +881,7 @@ for i in range(nomer, birn.max_row):
             q = ' '.join(d)
         mbk[q] = pd.Series(mtCount, index=mtDate)
 mbk = pd.DataFrame(mbk)
-mbk.index = pd.to_datetime(mbk.index, errors='ignore',dayfirst=True)
+mbk.index = pd.to_datetime(mbk.index, errors='ignore', dayfirst=True)
 mbk = mbk.sort_index()
 mbk.index = mbk.index.strftime('%d.%m.%Y')
 
@@ -890,7 +915,7 @@ for i in range(nomer, birn.max_row):
             q = ' '.join(d)
         mtvsk[q] = pd.Series(mtCount, index=mtDate)
 mtvsk = pd.DataFrame(mtvsk)
-mtvsk.index = pd.to_datetime(mtvsk.index, errors='ignore',dayfirst=True)
+mtvsk.index = pd.to_datetime(mtvsk.index, errors='ignore', dayfirst=True)
 mtvsk = mtvsk.sort_index()
 mtvsk.index = mtvsk.index.strftime('%d.%m.%Y')
 mtvsk = mtvsk.rename_axis('Дата')
@@ -917,7 +942,7 @@ for i in range(nomer, birn.max_row):
             q = ' '.join(d)
         mbkvsk[q] = pd.Series(mtCount, index=mtDate)
 mbkvsk = pd.DataFrame(mbkvsk)
-mbkvsk.index = pd.to_datetime(mbkvsk.index, errors='ignore',dayfirst=True)
+mbkvsk.index = pd.to_datetime(mbkvsk.index, errors='ignore', dayfirst=True)
 mbkvsk = mbkvsk.sort_index()
 mbkvsk.index = mbkvsk.index.strftime('%d.%m.%Y')
 mbkvsk = mbkvsk.rename_axis('Дата')
@@ -944,11 +969,11 @@ for i in range(nomer, birn.max_row):
             q = ' '.join(d)
         mbvsk[q] = pd.Series(mtCount, index=mtDate)
 mbvsk = pd.DataFrame(mbvsk)
-mbvsk.index = pd.to_datetime(mbvsk.index, errors='ignore',dayfirst=True)
+mbvsk.index = pd.to_datetime(mbvsk.index, errors='ignore', dayfirst=True)
 mbvsk = mbvsk.sort_index()
 mbvsk.index = mbvsk.index.strftime('%d.%m.%Y')
 mbvsk = mbvsk.rename_axis('Дата')
-#print(sum(mbvsk))
+# print(sum(mbvsk))
 molod.append(mbvsk)
 
 ind = len(mb.index) + 6
@@ -1013,5 +1038,3 @@ for i in range(1, ost_mb.max_row + 1):
         ost_mb.cell(i, j).font = Font(size=16, bold=True)
 
 ost.save(f'{name}.xlsx')
-
-
